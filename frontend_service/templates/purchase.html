@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Покупка</title>
+  <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: Arial, sans-serif;
+      }
+
+      body {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          background: #0a0a0a;
+          padding: 20px;
+          color: white;
+          min-height: 100vh;
+          position: relative;
+          overflow-x: hidden;
+      }
+
+      .particles {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 0;
+      }
+
+      .particle {
+          position: absolute;
+          width: 6px;
+          height: 6px;
+          background: rgba(255, 255, 255, 0.4);
+          border-radius: 50%;
+          animation: float 15s infinite linear;
+      }
+
+      @keyframes float {
+          0% { transform: translate(0, 0); }
+          25% { transform: translate(50px, 50px); }
+          50% { transform: translate(100px, 0); }
+          75% { transform: translate(50px, -50px); }
+          100% { transform: translate(0, 0); }
+      }
+
+      /* СИЛЬНЫЙ эффект шума */
+      .noise {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: 
+              linear-gradient(rgba(10, 10, 10, 0.9), rgba(10, 10, 10, 0.9)),
+              url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABOSURBVGhD7cExAQAwDMCg+zfd2VAk4AcVK1asWLFixYoVK1asWLFixYoVK1asWLFixYoVK1asWLFixYoVK1asWLFixYoVK1asWLFixYoVK1as2AN9fQK0wTjT5QAAAABJRU5ErkJggg==');
+          opacity: 0.3; /* Усиленная прозрачность */
+          z-index: 1;
+          pointer-events: none;
+      }
+
+      .noise::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABOSURBVGhD7cExAQAwDMCg+zfd2VAk4AcVK1asWLFixYoVK1asWLFixYoVK1asWLFixYoVK1asWLFixYoVK1asWLFixYoVK1asWLFixYoVK1as2AN9fQK0wTjT5QAAAABJRU5ErkJggg==');
+          opacity: 0.2;
+          mix-blend-mode: overlay;
+      }
+
+      .content {
+          position: relative;
+          z-index: 2;
+          width: 100%;
+          max-width: 800px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+      }
+
+      h1 {
+          margin-bottom: 20px;
+          text-transform: uppercase;
+      }
+
+      .video-container {
+          width: 100%;
+          max-width: 640px;
+          margin-bottom: 20px;
+          border-radius: 10px;
+          position: relative;
+          overflow: hidden;
+      }
+
+      .video-container::after {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          border-radius: 10px;
+          box-shadow: 0 0 30px rgba(138, 43, 226, 0.7);
+          pointer-events: none;
+      }
+
+      img {
+          width: 100%;
+          border-radius: 10px;
+          display: block;
+      }
+
+      .btn-custom {
+          width: 220px;
+          padding: 15px 30px;
+          font-size: 20px;
+          background: white;
+          color: #333;
+          border: none;
+          border-radius: 50px;
+          cursor: pointer;
+          transition: all 0.4s ease-in-out;
+          box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+          margin-top: 20px;
+          font-weight: bold;
+          text-transform: uppercase;
+          position: relative;
+          overflow: hidden;
+      }
+
+      .btn-custom:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 20px 40px rgba(255, 255, 255, 0.4);
+      }
+
+      .btn-custom:active {
+          transform: translateY(-1px);
+      }
+
+      .btn-custom::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABOSURBVGhD7cExAQAwDMCg+zfd2VAk4AcVK1asWLFixYoVK1asWLFixYoVK1asWLFixYoVK1asWLFixYoVK1asWLFixYoVK1asWLFixYoVK1as2AN9fQK0wTjT5QAAAABJRU5ErkJggg==');
+          opacity: 0.1;
+          pointer-events: none;
+      }
+
+      #qr-code {
+          margin-top: 20px;
+          max-width: 250px;
+          display: none;
+          border-radius: 10px;
+      }
+
+      #cart {
+          width: 100%;
+          max-width: 640px;
+          background: rgba(0, 0, 0, 0.7);
+          padding: 15px;
+          margin-bottom: 20px;
+          border-radius: 8px;
+          box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(138, 43, 226, 0.3);
+      }
+
+      #cart h2 {
+          margin-bottom: 10px;
+          font-weight: bold;
+          text-transform: uppercase;
+      }
+      #cart ul {
+          list-style-type: none;
+          padding-left: 0;
+      }
+      #cart li {
+          margin-bottom: 5px;
+          font-weight: bold;
+          text-transform: uppercase;
+      }
+      #cart-total {
+          font-weight: normal;
+          text-transform: none;
+      }
+  </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    <div class="noise"></div>
+
+    <div class="content">
+        <h1>Покупка</h1>
+
+        <div class="video-container">
+            <img id="video-feed" src="http://localhost:5002/video_feed" alt="Видео">
+        </div>
+
+        <div id="cart">
+            <h2>Корзина</h2>
+            <ul id="cart-items"></ul>
+            <p id="cart-total">Итого: 0 руб.</p>
+        </div>
+
+        <button class="btn-custom" id="pay-btn">Оплатить</button>
+
+        <div id="qr-container">
+            <img id="qr-code" alt="QR-код для оплаты">
+        </div>
+    </div>
+
+    <script>
+        // Плавающие шарики
+        const particlesContainer = document.getElementById('particles');
+        const particleCount = 3;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.top = `${Math.random() * 100}%`;
+            particle.style.animationDelay = `${Math.random() * 5}s`;
+            particle.style.animationDuration = `${10 + Math.random() * 10}s`;
+            
+            particlesContainer.appendChild(particle);
+        }
+
+        // Анимированный шум
+        const noise = document.querySelector('.noise');
+        let x = 0, y = 0;
+        function animateNoise() {
+            x = (x + Math.random() * 4 - 2) % 100;
+            y = (y + Math.random() * 4 - 2) % 100;
+            noise.style.backgroundPosition = `${x}% ${y}%`;
+            if (noise.querySelector('::after')) {
+                noise.querySelector('::after').style.backgroundPosition = `${100-x}% ${100-y}%`;
+            }
+            requestAnimationFrame(animateNoise);
+        }
+        animateNoise();
+
+        const BACKEND_URL = "http://localhost:5002";
+
+        function updateCart() {
+            fetch(BACKEND_URL + "/cart")
+                .then(response => response.json())
+                .then(data => {
+                    const cartItemsList = document.getElementById("cart-items");
+                    cartItemsList.innerHTML = "";
+                    let total = 0;
+                    for (const cat in data) {
+                        const item = data[cat];
+                        total += item.total_price;
+                        const li = document.createElement("li");
+                        li.textContent = `${item.name}: ${item.quantity} x ${item.unit_price} = ${item.total_price.toFixed(2)} руб.`;
+                        cartItemsList.appendChild(li);
+                    }
+                    document.getElementById("cart-total").textContent = "Итого: " + total.toFixed(2) + " руб.";
+                })
+                .catch(error => console.error("Ошибка при получении корзины:", error));
+        }
+
+        setInterval(updateCart, 2000);
+        updateCart();
+
+        document.getElementById("pay-btn").addEventListener("click", function() {
+            fetch(BACKEND_URL + "/pay")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.qr_code) {
+                        const qrImage = document.getElementById("qr-code");
+                        qrImage.src = "data:image/png;base64," + data.qr_code;
+                        qrImage.style.display = "block";
+                    } else {
+                        alert("Ошибка при генерации QR-кода");
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка:", error);
+                    alert("Ошибка при запросе оплаты");
+                });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+version: '3'
+services:
+  frontend_service:
+    build: ./frontend_service
+    ports:
+      - "5000:5000"
+    depends_on:
+      - backend_service
+  backend_service:
+    build: ./backend_service
+    ports:
+      - "5001:5001"
+    depends_on:
+      - database_service
+  database_service:
+    build: ./database_service
+    ports:
+      - "5002:5002"
